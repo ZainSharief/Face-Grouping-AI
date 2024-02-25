@@ -1,14 +1,5 @@
 import tensorflow as tf
 
-'''
-@inproceedings{liu2016ssd,
-  Author = {Liu, Wei and Anguelov, Dragomir and Erhan, Dumitru and Szegedy, Christian and Reed, Scott and Fu, Cheng-Yang and Berg, Alexander C.},
-  Booktitle = {European Conference on Computer Vision (ECCV)},
-  Title = {SSD: Single Shot MultiBox Detector},
-  Year = {2016}
-}
-'''
-
 class VGG16(tf.keras.Model):
 # Defining the class that contains the VGG16 backbone
     def __init__(self):
