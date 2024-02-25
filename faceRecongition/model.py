@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # Complies the model by declaring the loss function and optimizer
 
     cp_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath="faceRecognitionWeights1/cp.ckpt",
+        filepath="faceRecognitionWeights/cp.ckpt",
         save_best_only=True,
         save_weights_only=True,
     )
