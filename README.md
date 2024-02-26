@@ -10,7 +10,7 @@ When testing the final program, and the face detection/recognition model, the re
 
 The entire program can be tested by running the main.py file.
 
-The citations for the dataset can be found below as follows.
+The citations for the datasets and models can be found below as follows.
 
 @inproceedings{yang2016wider,
 	Author = {Yang, Shuo and Luo, Ping and Loy, Chen Change and Tang, Xiaoou},
