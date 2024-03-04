@@ -104,7 +104,7 @@ def inputImages():
 def process():
 # Procedure to process each image
     
-    THRESHOLD = 0.3
+    THRESHOLD = 0.35
     unsortedImagePaths = os.listdir(r'.\images\unsorted')
     # Collects all unsorted images
 
@@ -148,9 +148,9 @@ def process():
 
                     distanceList.append(np.min([tf.reduce_sum(tf.square(tf.subtract(embeddding, imageEmbedding)), axis=-1) for embeddding in embeddingSetList]))
                     # Calculates the smallest distance of all the embeddings of a person 
-
+                    
                 if len(distanceList) != 0: 
-                
+
                     if np.min(distanceList) <= THRESHOLD:
                     # Validates that the smallest value from distanceList is less than the threshold
                         addImageToPerson(newImagePath, existingEmbeddings[np.argmin(distanceList)])
@@ -325,6 +325,13 @@ def manuallyAdd(ImagePath, faceID):
             ?, ?
         )
     ''', (ImagePath, faceID))
+    # Adds a connection between the person and the image
+
+    cursor.execute('''
+        UPDATE tblImages SET containsPerson = ? WHERE ImagePath = ?
+    ''', (True, ImagePath))
+    # Enforces that the image has a person in it
+
     conn.commit()
     conn.close()
     # Inserts a link between the face and image
@@ -395,10 +402,15 @@ def getFaces(filter):
     conn = sqlite3.connect('faceGrouping.db')
     cursor = conn.cursor()
     # Opens and creates a connection to the database
-    filter = '%' + filter + '%'
-    cursor.execute('''
-        SELECT faceID, name, thumbnail FROM tblFaces WHERE name LIKE ?
-    ''', (filter,))
+    if filter != '':
+        filter = '%' + filter + '%'
+        cursor.execute('''
+            SELECT faceID, name, thumbnail FROM tblFaces WHERE name LIKE ? AND name != ?
+        ''', (filter, 'unnamed'))
+    else:
+        cursor.execute('''
+            SELECT faceID, name, thumbnail FROM tblFaces
+        ''')
     faceData = cursor.fetchall()
     conn.close()
     # Fetches the faceID, name and thumbnail of all faces  
