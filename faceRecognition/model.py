@@ -10,13 +10,14 @@ class faceNet(tf.keras.Model):
             include_top=False, 
             weights='imagenet',
             input_shape=(224, 224, 3),
+            pooling='avg'
         )
 
         self.faceNet = tf.keras.Sequential([
         # Creates a Keras Sequential that instantiates all the layers for the faceNet architecture 
             self.vgg16,
-            tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(units=128, activation='relu'),
+            tf.keras.layers.Lambda(lambda x: tf.math.l2_normalize(x, axis=1))
         ])
 
     def call(self, tensor):
@@ -57,12 +58,12 @@ if __name__ == '__main__':
 
     model.compile(
         loss=tripletLoss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
     )
     # Complies the model by declaring the loss function and optimizer
 
     cp_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath="faceRecognitionWeights/cp.ckpt",
+        filepath="faceRecognitionWeights1/cp.ckpt",
         save_best_only=True,
         save_weights_only=True,
     )
@@ -75,21 +76,11 @@ if __name__ == '__main__':
     )
     # Callback that stops the model from training if it starts to overfit
 
-    def scheduler(epoch, lr):
-        return lr * tf.math.exp(-0.1)
-    # Function that schedules the learning rate through the epochs 
-        
-    lr_scheduler = tf.keras.callbacks.LearningRateScheduler(
-        scheduler, 
-        verbose=0
-    )
-    # Callback that reduces the learning rate over time
-
     model.fit(
         trainDataset,
         batch_size=32,
         epochs=30,
         validation_data=valDataset,
-        callbacks=[cp_callback, early_stopping, lr_scheduler],
+        callbacks=[cp_callback, early_stopping],
     )
     # Trains the model on the given dataset
