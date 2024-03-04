@@ -124,16 +124,17 @@ class faceNet(tf.keras.Model):
         super().__init__()
 
         self.vgg16 = tf.keras.applications.vgg16.VGG16(
-            include_top=False,
+            include_top=False, 
             weights='imagenet',
             input_shape=(224, 224, 3),
+            pooling='avg'
         )
 
         self.faceNet = tf.keras.Sequential([
-        # Creates a Keras Sequential that instantiates all the layers for the faceNet architecture
+        # Creates a Keras Sequential that instantiates all the layers for the faceNet architecture 
             self.vgg16,
-            tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(units=128, activation='relu'),
+            tf.keras.layers.Lambda(lambda x: tf.math.l2_normalize(x, axis=1))
         ])
 
     def call(self, tensor):
