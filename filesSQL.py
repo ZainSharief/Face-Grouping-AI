@@ -104,15 +104,55 @@ def inputImages():
 def process():
 # Procedure to process each image
     
-    THRESHOLD = 0.35
+    THRESHOLD = 0.2
     unsortedImagePaths = os.listdir(r'.\images\unsorted')
     # Collects all unsorted images
+
+    if len(unsortedImagePaths) == 0: return None
+    # Validates the list is not empty
 
     conn = sqlite3.connect('faceGrouping.db')
     cursor = conn.cursor()
     # Opens and creates a connection to the database
 
-    for imagePath in unsortedImagePaths:
+    validImagePaths = []
+
+    for unsortedimagepath in unsortedImagePaths:
+    # Iterates through each entered image
+        unsortedImage = os.path.join(r'.\images\unsorted', unsortedimagepath)
+
+        cursor.execute('''
+            SELECT ImagePath FROM tblImages WHERE ImagePath = ?
+        ''', (unsortedImage,))
+        imageExists = cursor.fetchall()
+        # Returns a list that states if the image exists
+
+        if len(imageExists) == 0:
+        # Checks if the image currently exists in the program
+            
+            if unsortedImage.lower().endswith('.jpg') or unsortedImage.lower().endswith('.png'):
+                try:
+                    Image.open(unsortedImage).verify()
+                    # Verifies the image is valid
+                    
+                    cursor.execute('''
+                        INSERT INTO tblImages VALUES(
+                            ?, ?
+                        )
+                    ''', (unsortedImage, False))
+                    # Adds the details of the image to the database
+                    conn.commit()
+
+                    validImagePaths.append(unsortedimagepath)
+                    # Adds the list to the new list of valid images
+                
+                except Exception as e:
+                    break
+        else:
+            validImagePaths.append(unsortedimagepath)
+            # Adds the list to the new list of valid images
+
+    for imagePath in validImagePaths:
         OldimagePath = os.path.join(r'.\images\unsorted', imagePath)
         # Creates the full image path
         newImagePath = os.path.join(r'.\images\sorted', imagePath)
