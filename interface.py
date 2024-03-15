@@ -288,12 +288,9 @@ def drawFaces(filter, xPosFace=190, yposFace=120):
         if xPosFace == 20 + (imgWidth + 20)*7:
         # Checks if 5 images have been placed on the screen
             xPosFace = 20
-            if yposFace < 7100:
-                yposFace += imgHeight + 70
-                # Offsets the x and y onto the next row
-            else:
-                    messagebox.showerror('Error', 'Too many photos, Remove some!')
-                    yposFace += imgHeight + 20
+            yposFace += imgHeight + 70
+            if yposFace > 7100:
+                messagebox.showerror('Error', 'Too many photos, Remove some!')
 
     return faceList
 
@@ -323,12 +320,9 @@ def drawImages(clickedFace, xPosFace=20, yposFace=120):
             if xPosFace == 20 + (imgWidth + 20)*7:
             # Checks if 5 images have been placed on the screen
                 xPosFace = 20
-                if yposFace < 20:
-                    yposFace += imgHeight + 20
-                    # Offsets the x and y onto the next row
-                else:
+                yposFace += imgHeight + 20
+                if yposFace > 7100:
                     messagebox.showerror('Error', 'Too many photos, Remove some!')
-                    yposFace += imgHeight + 20
 
     return faceImageList
 
@@ -393,6 +387,7 @@ pygame.init()
 window = pygame.display.set_mode((1280, 720))
 screen = pygame.surface.Surface((1280, 7200))
 pygame.display.set_caption('Face Grouping Software')
+clock = pygame.time.Clock()
 scroll_y = 0
 # Creates the screen and gives it a caption
 
@@ -617,9 +612,9 @@ while eventLoop:
                         scroll_y = 0
 
             elif event.button == 4: 
-                scroll_y = min(scroll_y + 50, 0)
+                scroll_y = min(scroll_y + 20, 0)
             elif event.button == 5: 
-                scroll_y = max(scroll_y - 50, -7200)
+                scroll_y = max(scroll_y - 20, -7200)
             # Sets up the scrolling function of the code
 
         elif event.type == pygame.KEYDOWN:
@@ -648,5 +643,6 @@ while eventLoop:
     # Blits the screen onto the view window
     pygame.display.flip()
     # Updates the display
+    clock.tick(60)
 
 pygame.quit()
